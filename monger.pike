@@ -1,0 +1,1 @@
+inherit Tools.Monger.MongerUser;
