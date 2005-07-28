@@ -1,10 +1,10 @@
 // -*- Pike -*-
 
-// $Id: MongerDeveloper.pike,v 1.5 2005-07-28 20:12:26 hww3 Exp $
+// $Id: MongerDeveloper.pike,v 1.6 2005-07-28 20:26:30 hww3 Exp $
 
 #pike __REAL_VERSION__
 
-constant version = ("$Revision: 1.5 $"/" ")[1];
+constant version = ("$Revision: 1.6 $"/" ")[1];
 constant description = "MongerDeveloper: the Pike module manger.";
 
 string default_repository = "http://modules.gotpike.org:8000/xmlrpc/index.pike";
@@ -118,7 +118,8 @@ int set_module_source(string module_name, string version,
 
   filename = explode_path(filename)[-1];
 
-  return x->set_module_source(module_id, version, filename, contents, 
+  return x->set_module_source(module_id, version, filename, 
+    MIME.encode_base64(contents), 
     ({username, password}));
   
 }
