@@ -1,10 +1,10 @@
 // -*- Pike -*-
 
-// $Id: MongerDeveloper.pike,v 1.4 2005-07-28 19:04:34 hww3 Exp $
+// $Id: MongerDeveloper.pike,v 1.5 2005-07-28 20:12:26 hww3 Exp $
 
 #pike __REAL_VERSION__
 
-constant version = ("$Revision: 1.4 $"/" ")[1];
+constant version = ("$Revision: 1.5 $"/" ")[1];
 constant description = "MongerDeveloper: the Pike module manger.";
 
 string default_repository = "http://modules.gotpike.org:8000/xmlrpc/index.pike";
@@ -64,6 +64,7 @@ void set_default_directory()
   builddir = default_builddir;
 } 
 
+//!
 int add_new_version(string module_name, string version, 
                     string changes, string license)
 {
@@ -82,6 +83,7 @@ int add_new_version(string module_name, string version,
   
 }
 
+//!
 int set_version_active(string module_name, string version, 
                     int active)
 {
@@ -98,7 +100,30 @@ int set_version_active(string module_name, string version,
   
 }
 
+//!
+int set_module_source(string module_name, string version, 
+                    string filename)
+{
+  mixed e; // for catching errors
+  int module_id;
+  mapping data = ([]);
 
+  object x = xmlrpc_handler(repository);
+
+  module_id=(int)(x->get_module_id(module_name));
+
+  string contents = Stdio.read_file(filename);
+
+  if(!contents || !strlen(contents)) error("unable to read file %s.\n", filename);
+
+  filename = explode_path(filename)[-1];
+
+  return x->set_module_source(module_id, version, filename, contents, 
+    ({username, password}));
+  
+}
+
+//!
 int set_dependency(string module_name, string version, 
                     string dependency, string min_version, string max_version,
                     int(0..1) required)
@@ -111,12 +136,13 @@ int set_dependency(string module_name, string version,
 
   module_id=(int)(x->get_module_id(module_name));
 
-  return x->set_dependency(module_id, version, dependency, min_version
+  return x->set_dependency(module_id, version, dependency, min_version,
     max_version, required, 
     ({username, password}));
   
 }
 
+//!
 int delete_dependency(string module_name, string version, 
                     string dependency, string min_version, string max_version)
 {
@@ -128,12 +154,13 @@ int delete_dependency(string module_name, string version,
 
   module_id=(int)(x->get_module_id(module_name));
 
-  return x->delete_dependency(module_id, version, dependency, min_version
+  return x->delete_dependency(module_id, version, dependency, min_version,
     max_version, 
     ({username, password}));
   
 }
 
+//!
 array get_dependencies(string module_name, string version)
 {
   mixed e; // for catching errors
@@ -144,9 +171,12 @@ array get_dependencies(string module_name, string version)
 
   module_id=(int)(x->get_module_id(module_name));
 
-  return x->get_module_dependencies(module_id, version,
-    ({username, password}));
-  
+  array a = x->get_module_dependencies(module_id, version);
+  foreach(a, mapping r)
+    if(r->dependency == "0") r->dependency = "Pike";
+    else 
+      r->dependency = x->get_module_info((int)(r->dependency))->name;
+  return a;
 }
 
 mapping get_module_action_data(string name, string|void version)
