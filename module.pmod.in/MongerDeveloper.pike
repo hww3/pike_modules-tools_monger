@@ -1,10 +1,10 @@
 // -*- Pike -*-
 
-// $Id: MongerDeveloper.pike,v 1.3 2005-07-28 17:40:15 hww3 Exp $
+// $Id: MongerDeveloper.pike,v 1.4 2005-07-28 19:04:34 hww3 Exp $
 
 #pike __REAL_VERSION__
 
-constant version = ("$Revision: 1.3 $"/" ")[1];
+constant version = ("$Revision: 1.4 $"/" ")[1];
 constant description = "MongerDeveloper: the Pike module manger.";
 
 string default_repository = "http://modules.gotpike.org:8000/xmlrpc/index.pike";
@@ -94,6 +94,57 @@ int set_version_active(string module_name, string version,
   module_id=(int)(x->get_module_id(module_name));
 
   return x->set_module_version_active(module_id, version, active, 
+    ({username, password}));
+  
+}
+
+
+int set_dependency(string module_name, string version, 
+                    string dependency, string min_version, string max_version,
+                    int(0..1) required)
+{
+  mixed e; // for catching errors
+  int module_id;
+  mapping data = ([]);
+
+  object x = xmlrpc_handler(repository);
+
+  module_id=(int)(x->get_module_id(module_name));
+
+  return x->set_dependency(module_id, version, dependency, min_version
+    max_version, required, 
+    ({username, password}));
+  
+}
+
+int delete_dependency(string module_name, string version, 
+                    string dependency, string min_version, string max_version)
+{
+  mixed e; // for catching errors
+  int module_id;
+  mapping data = ([]);
+
+  object x = xmlrpc_handler(repository);
+
+  module_id=(int)(x->get_module_id(module_name));
+
+  return x->delete_dependency(module_id, version, dependency, min_version
+    max_version, 
+    ({username, password}));
+  
+}
+
+array get_dependencies(string module_name, string version)
+{
+  mixed e; // for catching errors
+  int module_id;
+  mapping data = ([]);
+
+  object x = xmlrpc_handler(repository);
+
+  module_id=(int)(x->get_module_id(module_name));
+
+  return x->get_module_dependencies(module_id, version,
     ({username, password}));
   
 }
