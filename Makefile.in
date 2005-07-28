@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.1 2005-07-28 00:08:33 hww3 Exp $
+# $Id: Makefile.in,v 1.2 2005-07-28 00:22:30 hww3 Exp $
 @make_variables@
 VPATH=@srcdir@:
 OBJS=
@@ -6,12 +6,16 @@ MODDIR=Tools.pmod/
 MODNAME=Monger
 MODULE_PMOD_IN=module.pmod.in
 MODULE_LDFLAGS=@LDFLAGS@ @LIBS@
+MODULE_INSTALL=copy_monger
 
 CONFIG_HEADERS=@CONFIG_HEADERS@
 
 @dynamic_module_makefile@
 @dependencies@
 
+copy_monger:
+	$(TMP_BINDIR)/install_module monger.pike $(SYSTEM_MODULE_PATH)/Tools.pmod/Standalone.pmod/monger.pike
+	
 release:
 	cvs rtag -D now RELEASE_1_${MIN} pike_modules/Tools_Monger
 	cvs export -d Tools_Monger-1.${MIN} -r RELEASE_1_${MIN} pike_modules/Tools_Monger
