@@ -1,10 +1,10 @@
 // -*- Pike -*-
 
-// $Id: MongerDeveloper.pike,v 1.1 2005-07-28 17:11:34 hww3 Exp $
+// $Id: MongerDeveloper.pike,v 1.2 2005-07-28 17:16:16 hww3 Exp $
 
 #pike __REAL_VERSION__
 
-constant version = ("$Revision: 1.1 $"/" ")[1];
+constant version = ("$Revision: 1.2 $"/" ")[1];
 constant description = "MongerDeveloper: the Pike module manger.";
 
 string default_repository = "http://modules.gotpike.org:8000/xmlrpc/index.pike";
@@ -53,7 +53,7 @@ void set_default_repository()
 //! configurations.
 void set_directory(string _directory)
 {
-  builddir = _builddir;
+  builddir = _directory;
 } 
 
 //! sets the default directory for working and storing configurations 
@@ -72,7 +72,7 @@ int add_new_version(string module_name, string version,
 
   object x = xmlrpc_handler(repository);
 
-  module_id=x->get_module_id(name);
+  module_id=x->get_module_id(module_name);
 
   data->changes = changes;
   data->license = license;
@@ -90,7 +90,7 @@ int set_version_active(string module_name, string version,
 
   object x = xmlrpc_handler(repository);
 
-  module_id=x->get_module_id(name);
+  module_id=x->get_module_id(module_name);
 
   return x->set_module_version_active(module_id, version, active, 
     ({username, password}));
