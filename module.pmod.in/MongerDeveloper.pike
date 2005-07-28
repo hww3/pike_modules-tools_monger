@@ -1,27 +1,27 @@
 // -*- Pike -*-
 
-// $Id: MongerDeveloper.pike,v 1.6 2005-07-28 20:26:30 hww3 Exp $
+// $Id: MongerDeveloper.pike,v 1.7 2005-07-28 20:29:05 hww3 Exp $
 
 #pike __REAL_VERSION__
 
-constant version = ("$Revision: 1.6 $"/" ")[1];
+constant version = ("$Revision: 1.7 $"/" ")[1];
 constant description = "MongerDeveloper: the Pike module manger.";
 
-string default_repository = "http://modules.gotpike.org:8000/xmlrpc/index.pike";
-string default_builddir = getenv("HOME") + "/.monger";
-string repository;
-string builddir;
+private string default_repository = "http://modules.gotpike.org:8000/xmlrpc/index.pike";
+private string default_builddir = getenv("HOME") + "/.monger";
+private string repository;
+private string builddir;
 
-int use_force=0;
-int use_local=0;
-string my_command;
-string argument;
-string my_version;
-string run_pike;
-array(string) pike_args = ({});
-string original_dir;
-string username, password;
-mapping created = ([]);
+private int use_force=0;
+private int use_local=0;
+private string my_command;
+private string argument;
+private string my_version;
+private string run_pike;
+private array(string) pike_args = ({});
+private string original_dir;
+private string username, password;
+private mapping created = ([]);
 
 void create()
 {
@@ -180,7 +180,7 @@ array get_dependencies(string module_name, string version)
   return a;
 }
 
-mapping get_module_action_data(string name, string|void version)
+private mapping get_module_action_data(string name, string|void version)
 {
   int module_id;
   string dv;
@@ -239,7 +239,7 @@ mapping get_module_action_data(string name, string|void version)
   return vi + info;
 }
 
-void do_download(string name, string|void version)
+private void do_download(string name, string|void version)
 {
   mixed e; // for catching errors
   int module_id;
@@ -262,7 +262,7 @@ void do_download(string name, string|void version)
     exit(1, "download error: no download available for this module version.\n");
 }
 
-void do_install(string name, string|void version)
+private void do_install(string name, string|void version)
 {
   mixed e; // for catching errors
   int module_id;
@@ -372,7 +372,7 @@ void do_install(string name, string|void version)
   cd(original_dir);
 }
 
-void do_list(string|void name)
+private void do_list(string|void name)
 {
   mixed e; // for catching errors
   array results;
