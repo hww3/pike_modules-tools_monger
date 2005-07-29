@@ -1,10 +1,10 @@
 // -*- Pike -*-
 
-// $Id: MongerDeveloper.pike,v 1.7 2005-07-28 20:29:05 hww3 Exp $
+// $Id: MongerDeveloper.pike,v 1.8 2005-07-29 15:36:40 hww3 Exp $
 
 #pike __REAL_VERSION__
 
-constant version = ("$Revision: 1.7 $"/" ")[1];
+constant version = ("$Revision: 1.8 $"/" ")[1];
 constant description = "MongerDeveloper: the Pike module manger.";
 
 private string default_repository = "http://modules.gotpike.org:8000/xmlrpc/index.pike";
@@ -81,6 +81,19 @@ int add_new_version(string module_name, string version,
 
   return x->new_module_version(module_id, version, data, ({username, password}));
   
+}
+
+//!
+int user_change_password(string|void _username, string _newpassword)
+{
+  mixed e; // for catching errors
+  int module_id;
+
+  object x = xmlrpc_handler(repository);
+ 
+  if(!_username) _username = username;
+
+  return x->user_change_password(_username, _newpassword, ({username, password}));  
 }
 
 //!
