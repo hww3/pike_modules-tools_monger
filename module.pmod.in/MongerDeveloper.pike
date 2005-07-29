@@ -1,10 +1,10 @@
 // -*- Pike -*-
 
-// $Id: MongerDeveloper.pike,v 1.8 2005-07-29 15:36:40 hww3 Exp $
+// $Id: MongerDeveloper.pike,v 1.9 2005-07-29 16:37:59 hww3 Exp $
 
 #pike __REAL_VERSION__
 
-constant version = ("$Revision: 1.8 $"/" ")[1];
+constant version = ("$Revision: 1.9 $"/" ")[1];
 constant description = "MongerDeveloper: the Pike module manger.";
 
 private string default_repository = "http://modules.gotpike.org:8000/xmlrpc/index.pike";
@@ -84,6 +84,27 @@ int add_new_version(string module_name, string version,
 }
 
 //!
+int add_new_version(string module_name, string version, 
+                    string|void changes, string|void license)
+{
+  mixed e; // for catching errors
+  int module_id;
+  mapping data = ([]);
+
+  object x = xmlrpc_handler(repository);
+
+  module_id=(int)(x->get_module_id(module_name));
+
+  if(changes)
+    data->changes = changes;
+  if(license)
+    data->license = license;
+
+  return x->update_module_version(module_id, version, data, ({username, password}));
+  
+}
+
+//!
 int user_change_password(string|void _username, string _newpassword)
 {
   mixed e; // for catching errors
@@ -94,6 +115,19 @@ int user_change_password(string|void _username, string _newpassword)
   if(!_username) _username = username;
 
   return x->user_change_password(_username, _newpassword, ({username, password}));  
+}
+
+//!
+int user_change_email(string|void _username, string _newemail)
+{
+  mixed e; // for catching errors
+  int module_id;
+
+  object x = xmlrpc_handler(repository);
+ 
+  if(!_username) _username = username;
+
+  return x->user_change_email(_username, _newemail, ({username, password}));  
 }
 
 //!
