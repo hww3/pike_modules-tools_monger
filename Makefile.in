@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.3 2005-07-28 20:14:07 hww3 Exp $
+# $Id: Makefile.in,v 1.4 2005-08-17 17:42:22 hww3 Exp $
 @make_variables@
 VPATH=@srcdir@:
 OBJS=
@@ -23,5 +23,5 @@ release:
 	pike -x module --autoheader && pike -x module --autoconf && \
 	rm -rf autom4*
 	gtar czvf Tools_Monger-7.6.${MIN}.tar.gz Tools_Monger-7.6.${MIN}
-
+	pike upload_module_version.pike Tools.Monger 7.6.${MIN}
 
