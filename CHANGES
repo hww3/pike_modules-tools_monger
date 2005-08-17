@@ -1,3 +1,7 @@
+Changes since version 7.6.32
+
+- Remove old dumped monger script, so that warning messages go away.
+
 Changes since version 7.6.28
 
 - Changed from performing a "make all" to a simple "make" when doing an 
