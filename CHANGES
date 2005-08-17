@@ -1,0 +1,10 @@
+Changes since version 7.6.28
+
+- Changed from performing a "make all" to a simple "make" when doing an 
+installation build. This should solve problems with modules like GTK.
+
+Changes since version 7.6.26
+
+- This is the first functional unbundled release of the Monger tool. This 
+version includes developer functionality, such as version creation,
+dependency functionality, and source upload.
