@@ -27,6 +27,10 @@ int main(int argc, array(string) argv)
   in->tcsetattr((["ECHO": 1]));
   Stdio.stdout.write("\n");
 
+  write("module: " + module + ", version " + version + "\n");
+  write("license: " + license + "\n");
+  write("changes: " + changes);
+
   m->set_auth(user, password);
   m->add_new_version(module, version, changes, license);
   m->set_dependency(module, version, "Pike", "7.6.0", "7.7.999", 1);
@@ -44,21 +48,21 @@ string get_changes()
 
   foreach(changefile/"\n", string line)
   {
-    if(!started && (Regexp("^Changes since")->match(line)
-             || Regexp("^Version ")->match(line)))
+    if(!started && (Regexp("^Changes since ")->match(line)
+             || Regexp("^Version [0-9]")->match(line)))
     {
       started = 1;
       continue;
     }
-    else if(started && (Regexp("^Changes since")->match(line)
-             || Regexp("^Version ")->match(line)))
+    else if(started && (Regexp("^Changes since ")->match(line)
+             || Regexp("^Version [0-9]")->match(line)))
     {
       return changes;
     }
 
-    else changes = changes + line + "\n";
+    else if(started) changes = changes + line + "\n";
     
   }
 
-  return "";
+  return changes;
 }

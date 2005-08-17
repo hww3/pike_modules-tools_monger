@@ -3,6 +3,10 @@ Changes since version 7.6.28
 - Changed from performing a "make all" to a simple "make" when doing an 
 installation build. This should solve problems with modules like GTK.
 
+- Repair update method, which was incorrectly defined.
+
+- Inclusion of sample method for automatically updating repository.
+
 Changes since version 7.6.26
 
 - This is the first functional unbundled release of the Monger tool. This 
