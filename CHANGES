@@ -1,6 +1,7 @@
-Changes since version 7.6.32
+Changes since version 7.6.34
 
 - Remove old dumped monger script, so that warning messages go away.
+- Fix for GNU and *BSD makes that don't like null arguments.
 
 Changes since version 7.6.28
 
