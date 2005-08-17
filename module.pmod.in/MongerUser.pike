@@ -1,10 +1,10 @@
 // -*- Pike -*-
 
-// $Id: MongerUser.pike,v 1.1 2005-07-28 16:55:39 hww3 Exp $
+// $Id: MongerUser.pike,v 1.2 2005-08-17 17:23:11 hww3 Exp $
 
 #pike __REAL_VERSION__
 
-constant version = ("$Revision: 1.1 $"/" ")[1];
+constant version = ("$Revision: 1.2 $"/" ")[1];
 constant description = "Monger: the Pike module manger.";
 
 string repository = "http://modules.gotpike.org:8000/xmlrpc/index.pike";
@@ -328,7 +328,7 @@ void do_install(string name, string|void version)
 
   // now, build the module.
 
-  array jobs = ({"all", "verify", (use_local?"local_":"") + "install"});
+  array jobs = ({"", "verify", (use_local?"local_":"") + "install"});
 
   object builder;
 
