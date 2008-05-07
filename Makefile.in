@@ -18,8 +18,8 @@ copy_monger:
 	$(TMP_BINDIR)/install_module monger.pike $(SYSTEM_MODULE_PATH)/Tools.pmod/Standalone.pmod/monger.pike
 	
 release:
-	cvs rtag -D now RELEASE_7_6_${MIN} pike_modules/Tools_Monger
-	cvs export -d Tools_Monger-7.6.${MIN} -r RELEASE_7_6_${MIN} pike_modules/Tools_Monger
+	svn rtag -D now RELEASE_7_6_${MIN} pike_modules/Tools_Monger
+	svn export -d Tools_Monger-7.6.${MIN} -r RELEASE_7_6_${MIN} pike_modules/Tools_Monger
 	cd Tools_Monger-7.6.${MIN} && \
 	pike -x module --autoheader && pike -x module --autoconf && \
 	rm -rf autom4*
