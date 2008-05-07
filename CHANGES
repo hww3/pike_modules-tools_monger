@@ -1,3 +1,8 @@
+Changes since version 7.7.39
+
+- Added --show-urls support when querying to show download urls.
+- Added support for multiple download URLs to be returned by repository.
+
 Changes since version 7.6.34
 
 - Remove old dumped monger script, so that warning messages go away.

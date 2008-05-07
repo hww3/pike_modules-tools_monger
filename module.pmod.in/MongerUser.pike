@@ -1,10 +1,10 @@
 // -*- Pike -*-
 
-// $Id: MongerUser.pike,v 1.3 2005-08-17 21:46:39 hww3 Exp $
+// $Id: MongerUser.pike,v 1.6 2008/05/07 17:50:14 bill Exp $
 
 #pike __REAL_VERSION__
 
-constant version = ("$Revision: 1.3 $"/" ")[1];
+constant version = ("$Revision: 1.6 $"/" ")[1];
 constant description = "Monger: the Pike module manger.";
 
 string repository = "http://modules.gotpike.org:8000/xmlrpc/index.pike";
@@ -12,6 +12,7 @@ string builddir = getenv("HOME") + "/.monger";
 
 int use_force=0;
 int use_local=0;
+int show_urls=0;
 string my_command;
 string argument;
 string my_version;
@@ -40,6 +41,7 @@ int main(int argc, array(string) argv)
     ({"list",Getopt.NO_ARG,({"--list"}) }),
     ({"download",Getopt.NO_ARG,({"--download"}) }),
     ({"query",Getopt.NO_ARG,({"--query"}) }),
+    ({"show_urls",Getopt.NO_ARG,({"--show-urls"}) }),
     ({"repository",Getopt.HAS_ARG,({"--repository"}) }),
     ({"builddir",Getopt.HAS_ARG,({"--builddir"}) }),
     ({"install",Getopt.NO_ARG,({"--install"}) }),
@@ -62,6 +64,9 @@ int main(int argc, array(string) argv)
     {
       case "repository":
         repository = opt[1];
+        break;
+      case "show_urls":
+	show_urls = 1;
         break;
       case "builddir":
         Stdio.Stat fs = file_stat(opt[1]);
@@ -141,6 +146,7 @@ Usage: pike -x monger [options] modulename
                        limited to those whose name contains the last 
                        argument in the argument list (modulename)
 --query              retrieves information about module modulename
+--show-urls          display download and other urls in query view
 --download           download the module modulename
 --install            install the module modulename
 --repository=url     sets the repository source to url
@@ -158,18 +164,23 @@ Usage: pike -x monger [options] modulename
 
 void do_query(string name, string|void version)
 {
-  mixed e; // for catching errors
-  int module_id;
-
-
   mapping vi = get_module_action_data(name, version);
+  if( !vi ) return;
 
   write("%s: %s\n", vi->name, vi->description);
   write("Author/Owner: %s\n", vi->owner);
   write("Version: %s (%s)\t", vi->version, vi->version_type);
   write("License: %s\n", vi->license);
   write("Changes: %s\n\n", vi->changes);
-  
+  if(vi->download && show_urls)
+  {
+    if(stringp(vi->download))
+      write("Download URL: %s\n\n", vi->download);
+    else if(arrayp(vi->download))
+      foreach(vi->download;;string u)
+          write("Download URL: %s\n\n", u);
+      
+  }
   if(vi->download)
     write("This module is available for automated installation.\n");
 
@@ -186,6 +197,7 @@ mapping get_module_action_data(string name, string|void version)
 {
   int module_id;
   string dv;
+  mixed err;
 
   string pike_version = 
     sprintf("%d.%d.%d", (int)__REAL_MAJOR__, 
@@ -193,13 +205,22 @@ mapping get_module_action_data(string name, string|void version)
 
   object x = xmlrpc_handler(repository);
 
-  module_id=x->get_module_id(name);
+  err = catch {
+    module_id = x->get_module_id(name);
+  };
+  if(err)
+  {
+    werror("An error occurred: %s", err[0]);
+    return 0;
+  }
 
   string v;
 
   mapping info = x->get_module_info((int)module_id);
 
-  mixed err=catch(v = x->get_recommended_module_version((int)module_id, pike_version));
+  err = catch {
+    v = x->get_recommended_module_version((int)module_id, pike_version);
+  };
 
   if(err)
     write("an error occurred while getting the recommended version.\n");
@@ -243,15 +264,20 @@ mapping get_module_action_data(string name, string|void version)
 
 void do_download(string name, string|void version)
 {
-  mixed e; // for catching errors
-  int module_id;
-
   mapping vi = get_module_action_data(name, version);
 
   if(vi->download)
   {
     write("beginning download of version %s...\n", vi->version);
-    array rq = Protocols.HTTP.get_url_nice(vi->download);
+    array rq;
+    if(arrayp(vi->download))
+      foreach(vi->download;; string u)
+      {
+        rq = Protocols.HTTP.get_url_nice(u);
+        if(rq) break;  
+      }
+    else
+      rq = Protocols.HTTP.get_url_nice(vi->download);
     if(!rq) 
       exit(1, "download error: unable to access download url\n");
     else
@@ -266,8 +292,6 @@ void do_download(string name, string|void version)
 
 void do_install(string name, string|void version)
 {
-  mixed e; // for catching errors
-  int module_id;
   int res;
 
   mapping vi = get_module_action_data(name, version);
@@ -278,7 +302,15 @@ void do_install(string name, string|void version)
     cd(builddir);
 
     write("beginning download of version %s...\n", vi->version);
-    array rq = Protocols.HTTP.get_url_nice(vi->download);
+    array rq;
+    if(arrayp(vi->download))
+      foreach(vi->download;; string u)
+      {
+        rq = Protocols.HTTP.get_url_nice(u);
+        if(rq) break;  
+      }
+    else
+      rq = Protocols.HTTP.get_url_nice(vi->download);
     if(!rq) 
       exit(1, "download error: unable to access download url\n");
     else
@@ -334,6 +366,15 @@ void do_install(string name, string|void version)
 
   foreach(jobs, string j)
   {
+    if(j == "install")
+    {
+      uninstall(name, 0);
+    }
+    else if(j=="local_install")
+    {
+      uninstall(name, 1);
+    }
+
     write("\nRunning %O in %O\n\n", run_pike+" "+pike_args*" "+" -x module "+j,
 	  getcwd());
     builder = Process.create_process(
@@ -376,7 +417,6 @@ void do_install(string name, string|void version)
 
 void do_list(string|void name)
 {
-  mixed e; // for catching errors
   array results;
 
   object x = xmlrpc_handler(repository);
@@ -404,6 +444,53 @@ void do_list(string|void name)
   }
 }
 
+int uninstall(string name, int|void _local)
+{
+  string dir;
+  string local_ver;
+  array components;
+
+  catch
+  {
+    local_ver = master()->resolv(name)["__version"];
+
+    if(local_ver) write("Version %s of this module is currently installed.\n",
+                        local_ver);
+
+    components = master()->resolv(name)["__components"];
+  };
+
+  if(!local_ver) return 0;
+  if(!components)
+  {
+    werror("no components element found for this module. Unable to reliably uninstall.\n");
+    return 0;
+  }
+
+  if(_local)
+  {
+    dir = combine_path(getenv("HOME"), "lib/pike/modules");
+  }
+  else
+  {
+    dir = master()->system_module_path[-1];
+  }
+
+  foreach(reverse(Array.sort_array(components, Array.oid_sort_func));; string comp)
+  {
+    object s = file_stat(Stdio.append_path(dir, comp));
+    if(!s)
+    {
+      werror("warning: %s does not exist.\n", comp);
+      continue;
+    }
+
+    werror("deleting " + comp + " [%s]\n", (s->isdir?"dir":"file"));
+    rm(Stdio.append_path(dir, comp));
+  }
+
+  return 1;
+}
 
 class xmlrpc_handler
 {
