@@ -18,11 +18,11 @@ copy_monger:
 	$(TMP_BINDIR)/install_module monger.pike $(SYSTEM_MODULE_PATH)/Tools.pmod/Standalone.pmod/monger.pike
 	
 release:
-	svn rtag -D now RELEASE_7_6_${MIN} pike_modules/Tools_Monger
-	svn export -d Tools_Monger-7.6.${MIN} -r RELEASE_7_6_${MIN} pike_modules/Tools_Monger
-	cd Tools_Monger-7.6.${MIN} && \
+	svn rtag -D now RELEASE_7_7_${MIN} pike_modules/Tools_Monger
+	svn export -d Tools_Monger-7.7.${MIN} -r RELEASE_7_7_${MIN} pike_modules/Tools_Monger
+	cd Tools_Monger-7.7.${MIN} && \
 	pike -x module --autoheader && pike -x module --autoconf && \
 	rm -rf autom4*
-	gtar czvf Tools_Monger-7.6.${MIN}.tar.gz Tools_Monger-7.6.${MIN}
-	pike upload_module_version.pike Tools.Monger 7.6.${MIN} "GPL/LGPL/MPL"
+	gtar czvf Tools_Monger-7.7.${MIN}.tar.gz Tools_Monger-7.7.${MIN}
+	pike upload_module_version.pike Tools.Monger 7.7.${MIN} "GPL/LGPL/MPL"
 
