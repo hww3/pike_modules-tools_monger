@@ -18,7 +18,7 @@ copy_monger:
 	$(TMP_BINDIR)/install_module monger.pike $(SYSTEM_MODULE_PATH)/Tools.pmod/Standalone.pmod/monger.pike
 	
 release:
-	svn copy http://wush.net/svn/hww3/trunk http://wush.net/svn/hww3/tags/Tools_Monger_RELEASE_7_7_${MIN} 
+	svn copy -m "tagging project" http://wush.net/svn/hww3/trunk http://wush.net/svn/hww3/tags/Tools_Monger_RELEASE_7_7_${MIN} 
 	svn export http://wush.net/svn/hww3/tags/Tools_Monger_RELEASE_7_7_${MIN}/pike_modules/Tools_Monger Tools_Monger-7.7.${MIN}
 	cd Tools_Monger-7.7.${MIN} && \
 	pike -x module --autoheader && pike -x module --autoconf && \
