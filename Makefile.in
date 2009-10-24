@@ -4,7 +4,6 @@ VPATH=@srcdir@:
 OBJS=
 MODDIR=Tools.pmod/
 MODNAME=Monger
-MODULE_PMOD_IN=module.pmod.in
 MODULE_LDFLAGS=@LDFLAGS@ @LIBS@
 MODULE_INSTALL=copy_monger
 
